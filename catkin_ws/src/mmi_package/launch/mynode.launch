@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="mynode" pkg="mmi_package" type="mynode.py" output="screen" required="true">
+    </node>
+</launch>

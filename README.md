@@ -30,5 +30,6 @@ catkin_create_pkg mmi_package rospy roscpp
 ``` bash 
 catkin build
 rosrun mmi_package mynode.py
+roslaunch src/mmi_package/launch/mynode.launch
 ``` 
 
