@@ -57,6 +57,15 @@ int convertUint(int uint){
     return uint;
 }
 
+std::string scaleValue(int value, int scalingFactor){
+  std::string erg{std::to_string(value)};
+  if(scalingFactor > 0){
+    return erg.insert(erg.length()-scalingFactor,".");
+  }else{
+    return erg;
+  }
+}
+
 
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
@@ -104,7 +113,9 @@ int main(int argc, char **argv)
    * buffer up before throwing some away.
    */
 // %Tag(PUBLISHER)%
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+  ros::Publisher total_grid_power_pub = n.advertise<std_msgs::String>("total_grid_power", 1000);
+  //ros::Publisher total_grid_power_pub = n.advertise<std_msgs::String>("total_grid_power", 1000);
+
 // %EndTag(PUBLISHER)%
 
 // %Tag(LOOP_RATE)%
@@ -141,22 +152,28 @@ int main(int argc, char **argv)
     // connect with the server
     mb.modbus_connect();
 
+    // TOTAL GRID POWER
     uint16_t modbus_buff[1];  
     mb.modbus_read_holding_registers(206, 1, modbus_buff);
     int total_grid_power = *modbus_buff;
     total_grid_power = convertUint(total_grid_power);
 
+    uint16_t modbus_buff2[1];  
+    mb.modbus_read_holding_registers(210, 1, modbus_buff2);
+    int total_grid_power_sf = *modbus_buff2;
+    total_grid_power_sf = convertUint(total_grid_power_sf);
+  
     mb.modbus_close();
 
     //std::string total_grid_power_sf = read_modbus(210,mb);
    
-    ss << "total_grid_power " << total_grid_power << "\n";
+    ss << scaleValue(total_grid_power, total_grid_power_sf) << "\n";
     //ss << "pv_energy_amount SF " << pv_energy_amount_SF;
     msg.data = ss.str();
 // %EndTag(FILL_MESSAGE)%
 
 // %Tag(ROSCONSOLE)%
-    ROS_INFO("%s", msg.data.c_str());
+    ROS_INFO("total_grid_power %s", msg.data.c_str());
 // %EndTag(ROSCONSOLE)%
 
     /**
@@ -166,7 +183,7 @@ int main(int argc, char **argv)
      * in the constructor above.
      */
 // %Tag(PUBLISH)%
-    chatter_pub.publish(msg);
+    total_grid_power_pub.publish(msg);
 // %EndTag(PUBLISH)%
 
 // %Tag(SPINONCE)%
