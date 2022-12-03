@@ -28,6 +28,7 @@ catkin_create_pkg mmi_package rospy roscpp
 ## Build and run Python node
 
 ``` bash 
+rosdep install mmi_package
 catkin build
 rosrun mmi_package mynode.py
 roslaunch src/mmi_package/launch/mynode.launch
@@ -45,8 +46,39 @@ rviz
 # all in one command!
 ``` 
 
+# Python modbus
+
+https://pypi.org/project/pyModbusTCP/
+
+
+# Cpp Modbus
+
+Cmake:
+```bash
+add_executable(talker src/talker.cpp)
+target_link_libraries(talker ${catkin_LIBRARIES})
+#add_dependencies(talker beginner_tutorials_generate_messages_cpp)
+
+add_executable(listener src/listener.cpp)
+target_link_libraries(listener ${catkin_LIBRARIES})
+#add_dependencies(listener beginner_tutorials_generate_messages_cpp)
+``` 
+
+```bash
+# In your catkin workspace
+cd ~/catkin_ws
+catkin_make  
+
+rosrun modbus-cpp listener
+```
 # Config
 Configure in panel:
 
+
+
+SolarEdge:
 192.168.1.30
 1502
+
+I AC Power: 40083, int16, ac power value
+I AC Power SF: 40084, int16, ac power value scaling factor
