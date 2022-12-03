@@ -167,13 +167,13 @@ int main(int argc, char **argv)
 
     //std::string total_grid_power_sf = read_modbus(210,mb);
    
-    ss << scaleValue(total_grid_power, total_grid_power_sf) << "\n";
+    ss << scaleValue(total_grid_power, total_grid_power_sf);
     //ss << "pv_energy_amount SF " << pv_energy_amount_SF;
     msg.data = ss.str();
 // %EndTag(FILL_MESSAGE)%
 
 // %Tag(ROSCONSOLE)%
-    ROS_INFO("total_grid_power %s", msg.data.c_str());
+    ROS_INFO("total_grid_power %s \n", msg.data.c_str());
 // %EndTag(ROSCONSOLE)%
 
     /**
