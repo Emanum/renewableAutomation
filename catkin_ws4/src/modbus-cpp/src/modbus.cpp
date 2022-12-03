@@ -37,18 +37,25 @@
 #include "modbus.h"
 #include <string>
 
- void read_modbus(u_int16_t adr,modbus mb,int *saveVar){
+ int read_modbus(u_int16_t adr,modbus mb){
     uint16_t modbus_buff[1];  
     mb.modbus_read_holding_registers(adr, 1, modbus_buff);
     int value = *modbus_buff;
     if(value > 32767){
       value = (value - 65536)*-1;
     }
-    memcpy(saveVar,&value,sizeof(uint16_t));
+    return value;
+    //memcpy(saveVar,&value,sizeof(uint16_t));
     //std::cout << value << ;
     //return std::to_string(value);
 }
 
+int convertUint(int uint){
+  if(uint > 32767){
+      uint = (uint - 65536)*-1;
+    }
+    return uint;
+}
 
 
 /**
@@ -110,16 +117,14 @@ int main(int argc, char **argv)
    */
 // %Tag(ROS_OK)%
   int count = 0;
-  while (ros::ok())
-  {
-    // create a modbus object
+
+      // create a modbus object
     modbus mb = modbus("192.168.1.30", 1502);
 
     // set slave id
     mb.modbus_set_slave_id(1);
-
-    // connect with the server
-    mb.modbus_connect();
+  while (ros::ok())
+  {
 
 // %EndTag(ROS_OK)%
     /**
@@ -133,12 +138,19 @@ int main(int argc, char **argv)
     //int total_grid_power = 1;
     //read_modbus(206,mb,&total_grid_power);
 
+    // connect with the server
+    mb.modbus_connect();
+
     uint16_t modbus_buff[1];  
     mb.modbus_read_holding_registers(206, 1, modbus_buff);
     int total_grid_power = *modbus_buff;
-    if(total_grid_power > 32767){
-      total_grid_power = (total_grid_power - 65536)*-1;
-    }
+    total_grid_power = convertUint(total_grid_power);
+    //if(total_grid_power > 32767){
+    //  total_grid_power = (total_grid_power - 65536)*-1;
+    //}
+    //int total_grid_power = read_modbus(206,mb);
+
+    mb.modbus_close();
 
     //std::string total_grid_power_sf = read_modbus(210,mb);
    

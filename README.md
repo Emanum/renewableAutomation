@@ -82,3 +82,11 @@ SolarEdge:
 
 I AC Power: 40083, int16, ac power value
 I AC Power SF: 40084, int16, ac power value scaling factor
+
+
+Registers:
+85 -> freq
+86 -> freq_sf
+
+206 -> total power
+210 -> total power SF
