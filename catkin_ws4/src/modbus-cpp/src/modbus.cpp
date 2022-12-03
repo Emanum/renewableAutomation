@@ -114,7 +114,10 @@ int main(int argc, char **argv)
    */
 // %Tag(PUBLISHER)%
   ros::Publisher total_grid_power_pub = n.advertise<std_msgs::String>("total_grid_power", 1000);
-  //ros::Publisher total_grid_power_pub = n.advertise<std_msgs::String>("total_grid_power", 1000);
+  ros::Publisher total_pv_power_pub = n.advertise<std_msgs::String>("total_pv_power", 1000);
+  ros::Publisher battery_state_of_charge_pub = n.advertise<std_msgs::String>("battery_state_of_charge", 1000);
+  ros::Publisher battery_power_pub = n.advertise<std_msgs::String>("battery_power", 1000);
+
 
 // %EndTag(PUBLISHER)%
 
@@ -131,9 +134,11 @@ int main(int argc, char **argv)
 
       // create a modbus object
     modbus mb = modbus("192.168.1.30", 1502);
-
     // set slave id
     mb.modbus_set_slave_id(1);
+
+    modbus mb_victron_battery = modbus("192.168.1.125", 502);
+    mb_victron_battery.modbus_set_slave_id(100);
   while (ros::ok())
   {
 
@@ -143,14 +148,23 @@ int main(int argc, char **argv)
      */
 // %Tag(FILL_MESSAGE)%
     std_msgs::String msg;
+    std_msgs::String msg_pv;
+    std_msgs::String msg_battery;
+    std_msgs::String msg_battery_power;
+
 
     std::stringstream ss;
+    std::stringstream ss_pv;
+    std::stringstream ss_battery;
+    std::stringstream ss_battery_power;
+
 
     //int total_grid_power = 1;
     //read_modbus(206,mb,&total_grid_power);
 
     // connect with the server
     mb.modbus_connect();
+    mb_victron_battery.modbus_connect();
 
     // TOTAL GRID POWER
     uint16_t modbus_buff[1];  
@@ -163,17 +177,52 @@ int main(int argc, char **argv)
     int total_grid_power_sf = *modbus_buff2;
     total_grid_power_sf = convertUint(total_grid_power_sf);
   
-    mb.modbus_close();
+    // PV Production
+    uint16_t modbus_buff3[1];  
+    mb.modbus_read_holding_registers(83, 1, modbus_buff3);
+    int ac_power = *modbus_buff3;
+    ac_power = convertUint(ac_power);
 
-    //std::string total_grid_power_sf = read_modbus(210,mb);
+    uint16_t modbus_buff4[1];  
+    mb.modbus_read_holding_registers(84, 1, modbus_buff4);
+    int ac_power_sf = *modbus_buff4;
+    ac_power_sf = convertUint(ac_power_sf);
+
+    // Battery State
+    uint16_t modbus_buff5[1];  
+    mb_victron_battery.modbus_read_holding_registers(843, 1, modbus_buff5);
+    int battery_state = *modbus_buff5;
+    battery_state = convertUint(battery_state);
+    
+    uint16_t modbus_buff6[1];  
+    mb_victron_battery.modbus_read_holding_registers(842, 1, modbus_buff6);
+    int battery_power = *modbus_buff6;
+    battery_power = convertUint(battery_power);
+
+    mb.modbus_close();
+    mb_victron_battery.modbus_close();
+
    
     ss << scaleValue(total_grid_power, total_grid_power_sf);
-    //ss << "pv_energy_amount SF " << pv_energy_amount_SF;
+    ss_pv << scaleValue(ac_power, ac_power_sf);
+    ss_battery << scaleValue(battery_state, 0);
+    ss_battery_power << scaleValue(battery_power, 0);
+
+
     msg.data = ss.str();
+    msg_pv.data = ss_pv.str();
+    msg_battery.data = ss_battery.str();
+    msg_battery_power.data = ss_battery_power.str();
+
+
 // %EndTag(FILL_MESSAGE)%
 
 // %Tag(ROSCONSOLE)%
-    ROS_INFO("total_grid_power %s \n", msg.data.c_str());
+    ROS_INFO("total_grid_power %s W \n", msg.data.c_str());
+    ROS_INFO("total_pv_power %s W \n", msg_pv.data.c_str());
+    ROS_INFO("battery_state_of_charge %s % \n", msg_battery.data.c_str());
+    ROS_INFO("msg_battery_power %s W \n", msg_battery_power.data.c_str());
+
 // %EndTag(ROSCONSOLE)%
 
     /**
@@ -184,6 +233,10 @@ int main(int argc, char **argv)
      */
 // %Tag(PUBLISH)%
     total_grid_power_pub.publish(msg);
+    total_pv_power_pub.publish(msg_pv);
+    battery_state_of_charge_pub.publish(msg_battery);
+    battery_power_pub.publish(msg_battery_power);
+
 // %EndTag(PUBLISH)%
 
 // %Tag(SPINONCE)%
