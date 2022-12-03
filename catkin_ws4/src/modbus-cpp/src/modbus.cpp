@@ -145,10 +145,6 @@ int main(int argc, char **argv)
     mb.modbus_read_holding_registers(206, 1, modbus_buff);
     int total_grid_power = *modbus_buff;
     total_grid_power = convertUint(total_grid_power);
-    //if(total_grid_power > 32767){
-    //  total_grid_power = (total_grid_power - 65536)*-1;
-    //}
-    //int total_grid_power = read_modbus(206,mb);
 
     mb.modbus_close();
 
