@@ -1,0 +1,5 @@
+py-modbus
+/home/manuel/Documents/renewableAutomation/catkin_ws2/devel/.private/py-modbus/cmake.lock /home/manuel/Documents/renewableAutomation/catkin_ws2/devel/./cmake.lock
+/home/manuel/Documents/renewableAutomation/catkin_ws2/devel/.private/py-modbus/lib/pkgconfig/py-modbus.pc /home/manuel/Documents/renewableAutomation/catkin_ws2/devel/lib/pkgconfig/py-modbus.pc
+/home/manuel/Documents/renewableAutomation/catkin_ws2/devel/.private/py-modbus/share/py-modbus/cmake/py-modbusConfig-version.cmake /home/manuel/Documents/renewableAutomation/catkin_ws2/devel/share/py-modbus/cmake/py-modbusConfig-version.cmake
+/home/manuel/Documents/renewableAutomation/catkin_ws2/devel/.private/py-modbus/share/py-modbus/cmake/py-modbusConfig.cmake /home/manuel/Documents/renewableAutomation/catkin_ws2/devel/share/py-modbus/cmake/py-modbusConfig.cmake
