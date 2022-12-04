@@ -37,18 +37,6 @@
 #include "modbus.h"
 #include <string>
 
- int read_modbus(u_int16_t adr,modbus mb){
-    uint16_t modbus_buff[1];  
-    mb.modbus_read_holding_registers(adr, 1, modbus_buff);
-    int value = *modbus_buff;
-    if(value > 32767){
-      value = (value - 65536)*-1;
-    }
-    return value;
-    //memcpy(saveVar,&value,sizeof(uint16_t));
-    //std::cout << value << ;
-    //return std::to_string(value);
-}
 
 int convertUint(int uint){
   if(uint > 32767){
@@ -57,7 +45,7 @@ int convertUint(int uint){
     return uint;
 }
 
-std::string scaleValue(int value, int scalingFactor){
+std::string scaleValueInt16(int16_t value, int16_t scalingFactor){
   std::string erg{std::to_string(value)};
   if(scalingFactor > 0){
     return erg.insert(erg.length()-scalingFactor,".");
@@ -169,44 +157,46 @@ int main(int argc, char **argv)
     // TOTAL GRID POWER
     uint16_t modbus_buff[1];  
     mb.modbus_read_holding_registers(206, 1, modbus_buff);
-    int total_grid_power = *modbus_buff;
-    total_grid_power = convertUint(total_grid_power);
+    int16_t total_grid_power;
+    memcpy(&total_grid_power,modbus_buff,sizeof(int16_t));
+    total_grid_power *= -1;
 
     uint16_t modbus_buff2[1];  
     mb.modbus_read_holding_registers(210, 1, modbus_buff2);
-    int total_grid_power_sf = *modbus_buff2;
-    total_grid_power_sf = convertUint(total_grid_power_sf);
+    int16_t total_grid_power_sf;
+    memcpy(&total_grid_power_sf,modbus_buff2,sizeof(int16_t));
   
     // PV Production
     uint16_t modbus_buff3[1];  
     mb.modbus_read_holding_registers(83, 1, modbus_buff3);
-    int ac_power = *modbus_buff3;
-    ac_power = convertUint(ac_power);
+    int16_t ac_power;
+    memcpy(&ac_power,modbus_buff3,sizeof(int16_t));
+    ac_power *= -1;
 
     uint16_t modbus_buff4[1];  
     mb.modbus_read_holding_registers(84, 1, modbus_buff4);
-    int ac_power_sf = *modbus_buff4;
-    ac_power_sf = convertUint(ac_power_sf);
+    int16_t ac_power_sf;
+    memcpy(&ac_power_sf,modbus_buff4,sizeof(int16_t));
 
     // Battery State
     uint16_t modbus_buff5[1];  
     mb_victron_battery.modbus_read_holding_registers(843, 1, modbus_buff5);
-    int battery_state = *modbus_buff5;
-    battery_state = convertUint(battery_state);
+    uint16_t battery_state;
+    memcpy(&battery_state,modbus_buff5,sizeof(uint16_t));
     
     uint16_t modbus_buff6[1];  
     mb_victron_battery.modbus_read_holding_registers(842, 1, modbus_buff6);
-    int battery_power = *modbus_buff6;
-    battery_power = convertUint(battery_power);
+    int16_t battery_power;
+    memcpy(&battery_power,modbus_buff6,sizeof(int16_t));
 
     mb.modbus_close();
     mb_victron_battery.modbus_close();
 
    
-    ss << scaleValue(total_grid_power, total_grid_power_sf);
-    ss_pv << scaleValue(ac_power, ac_power_sf);
-    ss_battery << scaleValue(battery_state, 0);
-    ss_battery_power << scaleValue(battery_power, 0);
+    ss << scaleValueInt16(total_grid_power, total_grid_power_sf);
+    ss_pv << scaleValueInt16(ac_power, ac_power_sf);
+    ss_battery << battery_state;
+    ss_battery_power << battery_power;
 
 
     msg.data = ss.str();
