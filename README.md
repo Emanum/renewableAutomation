@@ -90,3 +90,13 @@ Registers:
 
 206 -> total power
 210 -> total power SF
+
+
+Victron:
+192.168.1.125
+port: default 502
+
+id: battery 225
+    gridmeter 32 (beim eingang)
+    pvInverter 33
+NOTE: Use unit-id 100 for the com.victronenergy.system data, for more information see FAQ.
