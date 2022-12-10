@@ -144,20 +144,20 @@ int main(int argc, char **argv)
 
 
 
-    std::stringstream ss;
-    std::stringstream ss_pv;
-    std::stringstream ss_battery;
-    std::stringstream ss_battery_power;
+    //std::stringstream ss;
+    //std::stringstream ss_pv;
 
 
     //int total_grid_power = 1;
     //read_modbus(206,mb,&total_grid_power);
 
     // connect with the server
-    mb.modbus_connect();
+    //mb.modbus_connect();
     mb_victron_battery.modbus_connect();
 
     // TOTAL GRID POWER
+    /*
+    SOLAR EDGE MODBUS
     uint16_t modbus_buff[1];  
     mb.modbus_read_holding_registers(206, 1, modbus_buff);
     int16_t total_grid_power;
@@ -180,6 +180,10 @@ int main(int argc, char **argv)
     mb.modbus_read_holding_registers(84, 1, modbus_buff4);
     int16_t ac_power_sf;
     memcpy(&ac_power_sf,modbus_buff4,sizeof(int16_t));
+    */
+
+
+    // VICTRON MODBUS
 
     // Battery State
     uint16_t modbus_buff5[1];  
@@ -235,33 +239,23 @@ int main(int argc, char **argv)
 
     int16_t grid_power = grid_phase1+grid_phase2+grid_phase3;
 
-    mb.modbus_close();
+    //mb.modbus_close();
     mb_victron_battery.modbus_close();
 
-   
-    ss << grid_power;
-    ss_pv << pv_input_sum;
-    ss_battery << battery_state;
-    ss_battery_power << battery_power;
-
-
-    msg.data = ss.str();
-    msg_pv.data = ss_pv.str();
-    msg_battery.data = ss_battery.str();
-    msg_battery_power.data = ss_battery_power.str();
+    msg.data = std::to_string(grid_power);
+    msg_pv.data = std::to_string(pv_input_sum);
+    msg_battery.data = std::to_string(battery_state);
+    msg_battery_power.data = std::to_string(battery_power);
     msg_batteryLife_soc_limit.data = std::to_string(batteryLife_soc_limit);
 
 
-// %EndTag(FILL_MESSAGE)%
 
-// %Tag(ROSCONSOLE)%
     ROS_INFO("total_grid_power %s W \n", msg.data.c_str());
     ROS_INFO("total_pv_power %s W \n", msg_pv.data.c_str());
     ROS_INFO("battery_state_of_charge %s % \n", msg_battery.data.c_str());
     ROS_INFO("battery_power %s W \n", msg_battery_power.data.c_str());
     ROS_INFO("batteryLife_soc_limit %s % \n", msg_batteryLife_soc_limit.data.c_str());
 
-// %EndTag(ROSCONSOLE)%
 
     /**
      * The publish() function is how you send messages. The parameter
@@ -269,22 +263,16 @@ int main(int argc, char **argv)
      * given as a template parameter to the advertise<>() call, as was done
      * in the constructor above.
      */
-// %Tag(PUBLISH)%
     total_grid_power_pub.publish(msg);
     total_pv_power_pub.publish(msg_pv);
     battery_state_of_charge_pub.publish(msg_battery);
     battery_power_pub.publish(msg_battery_power);
     battery_life_soc_limit_pub.publish(msg_batteryLife_soc_limit);
 
-// %EndTag(PUBLISH)%
 
-// %Tag(SPINONCE)%
     ros::spinOnce();
-// %EndTag(SPINONCE)%
 
-// %Tag(RATE_SLEEP)%
     loop_rate.sleep();
-// %EndTag(RATE_SLEEP)%
     ++count;
   }
 
