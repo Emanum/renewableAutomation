@@ -1,111 +1,92 @@
-# renewableAutomation
+# Renewable Automation
 
 
-# Slides
+## Project Idea
 
-## Extend ROS with your packages - Catkin
+The goal of this project is to build a base system that allows private homes to optimally make use of a renewable energy source such as a photovoltaic system.
 
+Often these systems already come with an interface to read the current power production. This could
+be used as a sensor information in an ROS automated smart home to turn on/off different energy
+consumers such as a heat pump for warm water or charging an electronic vehicle.
+Another way to make use of an automated reading of this sensor information to calculate statistics
+such as daily/weekly energy production/consumption.
 
-``` bash 
+The project will be built for our own house with our specific gear in mind. However, the idea can be
+applied to other systems as well.
 
-sudo apt install build-essential python-catkin-tools python-rosdep
+## Project Overview
 
+The project is run with ros medlodic. We have the following nodes:
 
-mkdir -p catkin_ws/src
-cd catkin_ws
-catkin init
-catkin config --extend /opt/ros/melodic
-``` 
+### modbus
 
-## Create a new package
+This is a publisher node that connects to a central modbus server, reads the data and publishes them onto varous ros topics.
+
+The following topics are published:
+* total_grid_power: wattage positiv:energy is consumed from grid, negativ:energy is delivered to grid
+* total_pv_power: wattage always >= 0
+* battery_state_of_charge: percentage 0-100
+* battery_power: wattage positiv:battery is charging, negativ: battery is discharging 
+* battery_life_soc_limit: percentage the battery will not get discharged beyound that level https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e 
+
+For total_grid_power and total_pv_power I read all 3 Phases seperatly and combine then to one number each.
+
+This node is preconfigured to listen to our specific modbus server(ip,port,slaveID) and read the correct addresses. The addresses can be found in CCGX-Modbus-TCP-register-list-2.90.xlsl
+
+Code: catkin_ws4/src/modbus-cpp/src/modbus.cpp
+catkin_ws4/src/modbus-cpp/src/modbus.h - this is an external lib from https://github.com/fz-lyu/modbuspp
+
+### computeNode
+
+This is a listener and publisher nodes. I listen to the the topic from the modbus node apply some logic that decides when a relay should be open or closed. This value will get written on the topic relay1_state (1 => open, 0 => closed).
+
+Currently we have a simple threshhold for the total_grid_power which the relay opens or closes. In the future we want to extend that logic to also use the battery state and total_pv_power.
+
+Code: catkin_ws4/src/modbus-cpp/src/computeNode.cpp
+
+### Rosserial Arduino Relay Toggle
+
+This is a listener node which runs on an arduino that is physically wired to a relay that can switch 220V 10A. This relay is connected to a standard power plug, so we can switch any device (that does not exceed the limits) with it.
+
+We listen to the relay1_state topic and either open or close the relay. 
+
+It is connected to the roscore with `rosserial_python serial_node.py` 
+
+Code: catkin_ws4/src/modbus-cpp/src/rosserial_arduino_relay_toggle/rosserial_arduino_relay_toggle.ino
+
+## How to run it
+
+Currently it only works when the correct modbus server is available. 
+
+Otherwise it is all connected to a central launch file:  catkin_ws4/src/modbus-cpp/launch/modbus.launch
 
 ``` bash
-cd catkin_ws/src
-#catkin_create_pkg package_name package_dependencies
-catkin_create_pkg mmi_package rospy roscpp
-``` 
-
-## Build and run Python node
-
-``` bash 
-rosdep install mmi_package
-catkin build
-rosrun mmi_package mynode.py
-roslaunch src/mmi_package/launch/mynode.launch
-``` 
-
-# Modbus
-
-` https://gitlab.com/InstitutMaupertuis/industrial_modbus_tcp` 
-
-``` bash
-
-
-rosrun industrial_modbus_tcp industrial_modbus_tcp &
-rviz
-# all in one command!
-``` 
-
-# Python modbus
-
-https://pypi.org/project/pyModbusTCP/
-
-
-# Cpp Modbus
-
-Cmake:
-```bash
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-#add_dependencies(talker beginner_tutorials_generate_messages_cpp)
-
-add_executable(listener src/listener.cpp)
-target_link_libraries(listener ${catkin_LIBRARIES})
-#add_dependencies(listener beginner_tutorials_generate_messages_cpp)
-``` 
-
-```bash
-# In your catkin workspace
-cd ~/catkin_ws
-catkin_make  
-
-rosrun modbus-cpp listener
+catkin_make
+source devel/bash.setup
+roslaunch modbus-cpp modbus.launch
 ```
-# Config
-Configure in panel:
 
 
 
-SolarEdge:
-192.168.1.30
-1502
+## Technical Modbus Documentation
 
-I AC Power: 40083, int16, ac power value
-I AC Power SF: 40084, int16, ac power value scaling factor
+### Modbus Connection Victron Cerbo GX
 
-
-Registers:
-85 -> freq
-86 -> freq_sf
-
-206 -> total power
-210 -> total power SF
+https://www.victronenergy.de/panel-systems-remote-monitoring/cerbo-gx
+https://www.victronenergy.de/panel-systems-remote-monitoring/cerbo-gx#technical-information
 
 Victron:
 192.168.1.125
 port: default 502
-
 id: battery 225
     gridmeter 32 (beim eingang)
     pvInverter 33
 NOTE: Use unit-id 100 for the com.victronenergy.system data, for more information see FAQ.
 
+Addresses that we use
 
-ESS BatteryLife SoC limit (read only) -> 2903 This value is maintained by BatteryLife. The Active SOC limit is the lower of this value, and register 2901. Also see https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e
-
-808,809,810 -> pvInput phase 1,2,3
-
-
-
-
-
+* batteryState 843
+* battery_power 842
+* batteryLife_soc_limit 2903
+* pvProduction phase1,2,3 808,809,810
+* gridPower phase1,2,3 820,821,823

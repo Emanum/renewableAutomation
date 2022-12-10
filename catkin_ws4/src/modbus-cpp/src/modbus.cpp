@@ -197,7 +197,7 @@ int main(int argc, char **argv)
     int16_t battery_power;
     memcpy(&battery_power,modbus_buff6,sizeof(int16_t));
 
-    // Max discharge current
+    // batteryLife_soc_limit
     uint16_t modbus_buff7[1];  
     mb_victron_battery.modbus_read_holding_registers(2903, 1, modbus_buff7);
     uint16_t batteryLife_soc_limit;

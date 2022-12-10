@@ -4,4 +4,8 @@
     </node>
     <node name="computeNode" pkg="modbus-cpp" type="computeNode" output="screen" required="true">
     </node>
+    <node name="arduino_switch" pkg="rosserial_python" type="serial_node.py" output="screen" required="true">
+        <param name="port" type="string" value="/dev/ttyACM0"/>
+        <param name="baud" type="int" value="57600"/>
+    </node>
 </launch>
