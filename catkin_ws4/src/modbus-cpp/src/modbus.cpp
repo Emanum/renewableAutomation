@@ -200,12 +200,47 @@ int main(int argc, char **argv)
     memcpy(&batteryLife_soc_limit,modbus_buff7,sizeof(uint16_t));
     batteryLife_soc_limit = batteryLife_soc_limit/10;//fixed scaling factor
 
+    // PV Production from victron
+    uint16_t modbus_buff8[1];  
+    mb_victron_battery.modbus_read_holding_registers(808, 1, modbus_buff8);
+    uint16_t pv_input_phase1;
+    memcpy(&pv_input_phase1,modbus_buff8,sizeof(uint16_t));
+
+    uint16_t modbus_buff9[1];   
+    mb_victron_battery.modbus_read_holding_registers(809, 1, modbus_buff9);
+    uint16_t pv_input_phase2;
+    memcpy(&pv_input_phase2,modbus_buff9,sizeof(uint16_t));
+
+    uint16_t modbus_buff10[1];   
+    mb_victron_battery.modbus_read_holding_registers(810, 1, modbus_buff10);
+    uint16_t pv_input_phase3;
+    memcpy(&pv_input_phase3,modbus_buff10,sizeof(uint16_t));
+
+    uint16_t pv_input_sum = pv_input_phase1+pv_input_phase2+pv_input_phase3;
+
+    uint16_t modbus_buff11[1];   
+    mb_victron_battery.modbus_read_holding_registers(820, 1, modbus_buff11);
+    int16_t grid_phase1;
+    memcpy(&grid_phase1,modbus_buff11,sizeof(int16_t));
+
+    uint16_t modbus_buff12[1];   
+    mb_victron_battery.modbus_read_holding_registers(821, 1, modbus_buff12);
+    int16_t grid_phase2;
+    memcpy(&grid_phase2,modbus_buff12,sizeof(int16_t));
+
+    uint16_t modbus_buff13[1];   
+    mb_victron_battery.modbus_read_holding_registers(822, 1, modbus_buff13);
+    int16_t grid_phase3;
+    memcpy(&grid_phase3,modbus_buff13,sizeof(int16_t));
+
+    int16_t grid_power = grid_phase1+grid_phase2+grid_phase3;
+
     mb.modbus_close();
     mb_victron_battery.modbus_close();
 
    
-    ss << scaleValueInt16(total_grid_power, total_grid_power_sf);
-    ss_pv << scaleValueInt16(ac_power, ac_power_sf);
+    ss << grid_power;
+    ss_pv << pv_input_sum;
     ss_battery << battery_state;
     ss_battery_power << battery_power;
 

@@ -98,8 +98,14 @@ port: default 502
 id: battery 225
     gridmeter 32 (beim eingang)
     pvInverter 33
-    ESS BatteryLife SoC limit (read only) -> 2903 This value is maintained by BatteryLife. The Active SOC limit is the lower of this value, and register 2901. Also see https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e
-
 NOTE: Use unit-id 100 for the com.victronenergy.system data, for more information see FAQ.
+
+
+ESS BatteryLife SoC limit (read only) -> 2903 This value is maintained by BatteryLife. The Active SOC limit is the lower of this value, and register 2901. Also see https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e
+
+808,809,810 -> pvInput phase 1,2,3
+
+
+
 
 
