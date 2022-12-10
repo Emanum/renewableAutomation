@@ -214,3 +214,6 @@ target_link_libraries(listener ${catkin_LIBRARIES})
 
 add_executable(modbus src/modbus.cpp)
 target_link_libraries(modbus ${catkin_LIBRARIES})
+
+add_executable(computeNode src/computeNode.cpp)
+target_link_libraries(computeNode ${catkin_LIBRARIES})

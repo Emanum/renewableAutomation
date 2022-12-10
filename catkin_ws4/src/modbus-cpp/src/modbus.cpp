@@ -211,7 +211,7 @@ int main(int argc, char **argv)
     ROS_INFO("total_grid_power %s W \n", msg.data.c_str());
     ROS_INFO("total_pv_power %s W \n", msg_pv.data.c_str());
     ROS_INFO("battery_state_of_charge %s % \n", msg_battery.data.c_str());
-    ROS_INFO("msg_battery_power %s W \n", msg_battery_power.data.c_str());
+    ROS_INFO("battery_power %s W \n", msg_battery_power.data.c_str());
 
 // %EndTag(ROSCONSOLE)%
 
