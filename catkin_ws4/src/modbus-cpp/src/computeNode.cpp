@@ -2,6 +2,7 @@
 // %Tag(FULLTEXT)%
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include <algorithm>
 
 int total_grid_power = 0;//wattage => positiv:energy is consumed from grid, negativ:energy is delivered to grid
 int total_pv_power = 0;//wattage >= 0
@@ -10,7 +11,7 @@ int battery_power = 0;//wattage positiv:battery is charging, negativ: battery is
 int battery_life_soc_limit = 0;//percentage the battery will not get discharged beyound that level https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e 
 
 
-int total_grid_power_relay_switch = 2430;
+int total_grid_power_relay_switch = 0;
 
 void total_grid_power_callback(const std_msgs::String::ConstPtr& msg)
 {
@@ -43,8 +44,26 @@ void battery_life_soc_limit_callback(const std_msgs::String::ConstPtr& msg)
 }
 
 
+
+char* getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const std::string& option)
+{
+    return std::find(begin, end, option) != end;
+}
+
 int main(int argc, char **argv)
 {
+
+  
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
    * any ROS arguments and name remapping that were provided at the command line.
@@ -63,6 +82,10 @@ int main(int argc, char **argv)
    * NodeHandle destructed will close down the node.
    */
   ros::NodeHandle n;
+
+  n.getParam("/computeNode/grid_power_treshhold", total_grid_power_relay_switch);    
+  ROS_INFO("using total_grid_power_relay_switch %d", total_grid_power_relay_switch);   
+
 
   /**
    * The subscribe() call is how you tell ROS that you want to receive messages

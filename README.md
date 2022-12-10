@@ -42,6 +42,8 @@ This is a listener and publisher nodes. I listen to the the topic from the modbu
 
 Currently we have a simple threshhold for the total_grid_power which the relay opens or closes. In the future we want to extend that logic to also use the battery state and total_pv_power.
 
+This threshhold can be configured in the launch file. currentValue < threshhold -> open otherwise close.
+
 Code: catkin_ws4/src/modbus-cpp/src/computeNode.cpp
 
 ### Rosserial Arduino Relay Toggle
