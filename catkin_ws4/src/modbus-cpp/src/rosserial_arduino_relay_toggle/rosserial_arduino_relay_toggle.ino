@@ -4,16 +4,19 @@
  */
 
 #include <ros.h>
-#include <std_msgs/int.h>
+#include <std_msgs/String.h>
 
 ros::NodeHandle nh;
 
-void switch_relay( const std_msgs::int& msg){
-  if(msg == "")
-  digitalWrite(13, HIGH-digitalRead(13));   // blink the led
+void switch_relay( const std_msgs::String& msg){
+  if(msg.data == "1"){
+    digitalWrite(13, HIGH);
+  }else{
+    digitalWrite(13, HIGH);
+  }
 }
 
-ros::Subscriber<std_msgs::int;> sub("toggle_led", &switch_relay );
+ros::Subscriber<std_msgs::String> sub("relay1_state", &switch_relay );
 
 void setup()
 {
