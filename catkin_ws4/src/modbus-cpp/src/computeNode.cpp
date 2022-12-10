@@ -15,31 +15,31 @@ int total_grid_power_relay_switch = 2430;
 void total_grid_power_callback(const std_msgs::String::ConstPtr& msg)
 {
   total_grid_power = std::stoi( msg->data.c_str() );
-  ROS_INFO("total_grid_power: [%d]", total_grid_power);
+  ROS_INFO("total_grid_power: [%d] W", total_grid_power);
 }
 
 void total_pv_power_callback(const std_msgs::String::ConstPtr& msg)
 {
   total_pv_power = std::stoi( msg->data.c_str() );
-  ROS_INFO("total_pv_power: [%d]", total_pv_power);
+  ROS_INFO("total_pv_power: [%d] W", total_pv_power);
 }
 
 void battery_state_of_charge_callback(const std_msgs::String::ConstPtr& msg)
 {
   battery_state_of_charge  = std::stoi( msg->data.c_str() );
-  ROS_INFO("battery_state_of_charge: [%d]", battery_state_of_charge);
+  ROS_INFO("battery_state_of_charge: [%d] percentage", battery_state_of_charge);
 }
 
 void battery_power_callback(const std_msgs::String::ConstPtr& msg)
 {
   battery_power  = std::stoi( msg->data.c_str() );
-  ROS_INFO("battery_power: [%d]", battery_power);
+  ROS_INFO("battery_power: [%d] W", battery_power);
 }
 
 void battery_life_soc_limit_callback(const std_msgs::String::ConstPtr& msg)
 {
   battery_life_soc_limit  = std::stoi( msg->data.c_str() );
-  ROS_INFO("battery_life_soc_limit: [%d]", battery_life_soc_limit);
+  ROS_INFO("battery_life_soc_limit: [%d] percentage", battery_life_soc_limit);
 }
 
 
