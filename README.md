@@ -58,11 +58,16 @@ Code: catkin_ws4/src/modbus-cpp/src/rosserial_arduino_relay_toggle/rosserial_ard
 
 ## How to run it
 
+Requirements: 
+Ubuntu 18.04
+Ros Melodic http://wiki.ros.org/melodic/Installation/Ubuntu
+
 Currently it only works when the correct modbus server is available. 
 
 Otherwise it is all connected to a central launch file:  catkin_ws4/src/modbus-cpp/launch/modbus.launch
 
 ``` bash
+cd catkin_ws4
 catkin_make
 source devel/bash.setup
 roslaunch modbus-cpp modbus.launch
