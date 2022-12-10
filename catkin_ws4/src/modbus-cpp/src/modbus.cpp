@@ -105,6 +105,7 @@ int main(int argc, char **argv)
   ros::Publisher total_pv_power_pub = n.advertise<std_msgs::String>("total_pv_power", 1000);
   ros::Publisher battery_state_of_charge_pub = n.advertise<std_msgs::String>("battery_state_of_charge", 1000);
   ros::Publisher battery_power_pub = n.advertise<std_msgs::String>("battery_power", 1000);
+  ros::Publisher battery_life_soc_limit_pub = n.advertise<std_msgs::String>("battery_life_soc_limit", 1000);
 
 
 // %EndTag(PUBLISHER)%
@@ -139,6 +140,8 @@ int main(int argc, char **argv)
     std_msgs::String msg_pv;
     std_msgs::String msg_battery;
     std_msgs::String msg_battery_power;
+    std_msgs::String msg_batteryLife_soc_limit;
+
 
 
     std::stringstream ss;
@@ -184,10 +187,18 @@ int main(int argc, char **argv)
     uint16_t battery_state;
     memcpy(&battery_state,modbus_buff5,sizeof(uint16_t));
     
+    // Battery battery_power
     uint16_t modbus_buff6[1];  
     mb_victron_battery.modbus_read_holding_registers(842, 1, modbus_buff6);
     int16_t battery_power;
     memcpy(&battery_power,modbus_buff6,sizeof(int16_t));
+
+    // Max discharge current
+    uint16_t modbus_buff7[1];  
+    mb_victron_battery.modbus_read_holding_registers(2903, 1, modbus_buff7);
+    uint16_t batteryLife_soc_limit;
+    memcpy(&batteryLife_soc_limit,modbus_buff7,sizeof(uint16_t));
+    batteryLife_soc_limit = batteryLife_soc_limit/10;//fixed scaling factor
 
     mb.modbus_close();
     mb_victron_battery.modbus_close();
@@ -203,6 +214,7 @@ int main(int argc, char **argv)
     msg_pv.data = ss_pv.str();
     msg_battery.data = ss_battery.str();
     msg_battery_power.data = ss_battery_power.str();
+    msg_batteryLife_soc_limit.data = std::to_string(batteryLife_soc_limit);
 
 
 // %EndTag(FILL_MESSAGE)%
@@ -212,6 +224,7 @@ int main(int argc, char **argv)
     ROS_INFO("total_pv_power %s W \n", msg_pv.data.c_str());
     ROS_INFO("battery_state_of_charge %s % \n", msg_battery.data.c_str());
     ROS_INFO("battery_power %s W \n", msg_battery_power.data.c_str());
+    ROS_INFO("batteryLife_soc_limit %s % \n", msg_batteryLife_soc_limit.data.c_str());
 
 // %EndTag(ROSCONSOLE)%
 
@@ -226,6 +239,7 @@ int main(int argc, char **argv)
     total_pv_power_pub.publish(msg_pv);
     battery_state_of_charge_pub.publish(msg_battery);
     battery_power_pub.publish(msg_battery_power);
+    battery_life_soc_limit_pub.publish(msg_batteryLife_soc_limit);
 
 // %EndTag(PUBLISH)%
 

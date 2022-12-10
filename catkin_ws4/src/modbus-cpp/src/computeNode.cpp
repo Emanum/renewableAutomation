@@ -7,6 +7,8 @@ int total_grid_power = 0;//wattage => positiv:energy is consumed from grid, nega
 int total_pv_power = 0;//wattage >= 0
 int battery_state_of_charge = 0;//percentage
 int battery_power = 0;//wattage positiv:battery is charging, negativ: battery is discharging 
+int battery_life_soc_limit = 0;//percentage the battery will not get discharged beyound that level https://www.victronenergy.com/media/pg/Energy_Storage_System/en/controlling-depth-of-discharge.html#UUID-af4a7478-4b75-68ac-cf3c-16c381335d1e 
+
 
 int total_grid_power_relay_switch = 2430;
 
@@ -33,6 +35,13 @@ void battery_power_callback(const std_msgs::String::ConstPtr& msg)
   battery_power  = std::stoi( msg->data.c_str() );
   ROS_INFO("battery_power: [%d]", battery_power);
 }
+
+void battery_life_soc_limit_callback(const std_msgs::String::ConstPtr& msg)
+{
+  battery_life_soc_limit  = std::stoi( msg->data.c_str() );
+  ROS_INFO("battery_life_soc_limit: [%d]", battery_life_soc_limit);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -75,6 +84,8 @@ int main(int argc, char **argv)
   ros::Subscriber sub2 = n.subscribe("total_pv_power", 1000, total_pv_power_callback);
   ros::Subscriber sub3 = n.subscribe("battery_state_of_charge", 1000, battery_state_of_charge_callback);
   ros::Subscriber sub4 = n.subscribe("battery_power", 1000, battery_power_callback); 
+  ros::Subscriber sub5 = n.subscribe("battery_life_soc_limit", 1000, battery_life_soc_limit_callback); 
+
 // %EndTag(SUBSCRIBER)%
 
 
