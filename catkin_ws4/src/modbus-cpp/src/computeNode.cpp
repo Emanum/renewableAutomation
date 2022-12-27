@@ -2,6 +2,7 @@
 // %Tag(FULLTEXT)%
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Int32.h"
 #include <algorithm>
 
 int total_grid_power = 0;//wattage => positiv:energy is consumed from grid, negativ:energy is delivered to grid
@@ -112,21 +113,21 @@ int main(int argc, char **argv)
 // %EndTag(SUBSCRIBER)%
 
 
-  ros::Publisher relay1_state_pub = n.advertise<std_msgs::String>("relay1_state", 1000);
+  ros::Publisher relay1_state_pub = n.advertise<std_msgs::Int32>("relay1_state", 1000);
 
   ros::Rate r(10); // 10 hz
   while (ros::ok())
   {
     ros::spinOnce();//handels subscribers and publishers
 
-    std_msgs::String msg;
+    std_msgs::Int32 msg;
     
     int relay_state = 1; 
     if(total_grid_power > total_grid_power_relay_switch){
       relay_state = 0;
     }
-    msg.data = std::to_string(relay_state);
-    ROS_INFO("relay1_state %s", msg.data.c_str());
+    msg.data = relay_state;
+    ROS_INFO("relay1_state %i", msg.data);
     relay1_state_pub.publish(msg);
     
     r.sleep();
