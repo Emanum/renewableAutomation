@@ -1,5 +1,0 @@
-mmi_package
-/home/manuel/Documents/renewableAutomation/catkin_ws/devel/.private/mmi_package/cmake.lock /home/manuel/Documents/renewableAutomation/catkin_ws/devel/./cmake.lock
-/home/manuel/Documents/renewableAutomation/catkin_ws/devel/.private/mmi_package/lib/pkgconfig/mmi_package.pc /home/manuel/Documents/renewableAutomation/catkin_ws/devel/lib/pkgconfig/mmi_package.pc
-/home/manuel/Documents/renewableAutomation/catkin_ws/devel/.private/mmi_package/share/mmi_package/cmake/mmi_packageConfig.cmake /home/manuel/Documents/renewableAutomation/catkin_ws/devel/share/mmi_package/cmake/mmi_packageConfig.cmake
-/home/manuel/Documents/renewableAutomation/catkin_ws/devel/.private/mmi_package/share/mmi_package/cmake/mmi_packageConfig-version.cmake /home/manuel/Documents/renewableAutomation/catkin_ws/devel/share/mmi_package/cmake/mmi_packageConfig-version.cmake
