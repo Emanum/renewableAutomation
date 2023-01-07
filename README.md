@@ -16,11 +16,11 @@ applied to other systems as well.
 
 ## Project Overview
 
-The project is run with ros medlodic. We have the following nodes:
+The project is run with ros melodic. We have the following nodes:
 
 ### modbus
 
-This is a publisher node that connects to a central modbus server, reads the data and publishes them onto varous ros topics.
+This is a publisher node that connects to a central modbus server, reads the data and publishes them onto various ros topics.
 
 The following topics are published:
 * total_grid_power: wattage positiv:energy is consumed from grid, negativ:energy is delivered to grid
@@ -31,24 +31,24 @@ The following topics are published:
 
 For total_grid_power and total_pv_power I read all 3 Phases seperatly and combine then to one number each.
 
-This node is preconfigured to listen to our specific modbus server(ip,port,slaveID) and read the correct addresses. The addresses can be found in CCGX-Modbus-TCP-register-list-2.90.xlsl
+**This node is preconfigured to listen to our specific modbus server(ip,port,slaveID) and read the correct addresses.** The addresses can be found in CCGX-Modbus-TCP-register-list-2.90.xlsl
 
 Code: catkin_ws4/src/modbus-cpp/src/modbus.cpp
 catkin_ws4/src/modbus-cpp/src/modbus.h - this is an external lib from https://github.com/fz-lyu/modbuspp
 
 ### computeNode
 
-This is a listener and publisher nodes. I listen to the the topic from the modbus node apply some logic that decides when a relay should be open or closed. This value will get written on the topic relay1_state (1 => open, 0 => closed).
+This is a listener and publisher nodes. I listen to the topics from the modbus node apply some logic that decides when a relay should be open or closed. This value will get written on the topic relay1_state (1 => open, 0 => closed).
 
-Currently we have a simple threshhold for the total_grid_power which the relay opens or closes. In the future we want to extend that logic to also use the battery state and total_pv_power.
+Currently, we have a simple threshold for the total_grid_power which the relay opens or closes. In the future we want to extend that logic to also use the battery state and total_pv_power.
 
-This threshhold can be configured in the launch file. currentValue < threshhold -> open otherwise close.
+This threshold can be configured in the launch file. currentValue < threshold -> open otherwise close.
 
 Code: catkin_ws4/src/modbus-cpp/src/computeNode.cpp
 
 ### Rosserial Arduino Relay Toggle
 
-This is a listener node which runs on an arduino that is physically wired to a relay that can switch 220V 10A. This relay is connected to a standard power plug, so we can switch any device (that does not exceed the limits) with it.
+This is a listener node which runs on an Arduino that is physically wired to a relay that can switch 220V 10A. This relay is connected to a standard power plug, so we can switch any device (that does not exceed the limits) with it.
 
 We listen to the relay1_state topic and either open or close the relay. 
 
@@ -62,7 +62,9 @@ Requirements:
 Ubuntu 18.04
 Ros Melodic http://wiki.ros.org/melodic/Installation/Ubuntu
 
-Currently it only works when the correct modbus server is available. 
+**It only works when the correct modbus server is available. The preconfigured server can be found in catkin_ws4/src/modbus-cpp/src/modbus.cpp**
+
+I put a demo video and screenshots in the folder demo as well as pictures of the used hardware.
 
 Otherwise it is all connected to a central launch file:  catkin_ws4/src/modbus-cpp/launch/modbus.launch
 
@@ -85,9 +87,6 @@ https://www.victronenergy.de/panel-systems-remote-monitoring/cerbo-gx#technical-
 Victron:
 192.168.1.125
 port: default 502
-id: battery 225
-    gridmeter 32 (beim eingang)
-    pvInverter 33
 NOTE: Use unit-id 100 for the com.victronenergy.system data, for more information see FAQ.
 
 Addresses that we use

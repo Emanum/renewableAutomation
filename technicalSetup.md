@@ -34,23 +34,6 @@ rosrun mmi_package mynode.py
 roslaunch src/mmi_package/launch/mynode.launch
 ``` 
 
-# Modbus
-
-` https://gitlab.com/InstitutMaupertuis/industrial_modbus_tcp` 
-
-``` bash
-
-
-rosrun industrial_modbus_tcp industrial_modbus_tcp &
-rviz
-# all in one command!
-``` 
-
-# Python modbus
-
-https://pypi.org/project/pyModbusTCP/
-
-
 # Cpp Modbus
 
 Cmake:
