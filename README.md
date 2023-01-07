@@ -14,6 +14,14 @@ such as daily/weekly energy production/consumption.
 The project will be built for our own house with our specific gear in mind. However, the idea can be
 applied to other systems as well.
 
+## Demo
+
+
+https://user-images.githubusercontent.com/9011769/211167296-1c7a2726-df9c-4389-8beb-735d02985d31.mp4
+
+![demo](https://user-images.githubusercontent.com/9011769/211167321-298f0dd3-57ca-4d75-93ee-166475890e64.png)
+
+
 ## Project Overview
 
 The project is run with ros melodic. We have the following nodes:
